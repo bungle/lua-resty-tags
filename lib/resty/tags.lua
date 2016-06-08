@@ -59,7 +59,6 @@ local function attr(s)
     return output(s)
 end
 
-
 local tag = {}
 
 function tag.new(opts)
