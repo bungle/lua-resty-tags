@@ -6,7 +6,8 @@ A small DSL for building HTML documents
 
 ```lua
 do
-    local html, head, script, body, h1, p, table, tr, th, img, br = require "resty.tags" ( "html", "head", "script", "body", "h1", "p", "table", "tr", "th", "img", "br" )
+    local html,   head,   script,   body,   h1,   p,   table,   tr,   th,   img,   br = require "resty.tags" (
+         "html", "head", "script", "body", "h1", "p", "table", "tr", "th", "img", "br" )
 
     print(
         html { lang = "en" } (
