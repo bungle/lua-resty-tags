@@ -8,7 +8,7 @@ A small DSL for building HTML documents
 do
     local tags = require "resty.tags"
     local html,   head,   script,   body,   h1,   p,   table,   tr,   th,   img,   br = tags (
-         "html", "head", "script", "body", "h1", "p", "table", "tr", "th", "img", "br" )
+        "html", "head", "script", "body", "h1", "p", "table", "tr", "th", "img", "br" )
 
     print(
         html { lang = "en" } (
@@ -17,14 +17,14 @@ do
             ),
             body (
                 h1 { class = 'title "is" bigger than you think', "selected" } "Hello",
-                h1 "perse",
+                h1 "Another Headline",
                 p (
                     "<Beautiful> & <Strange>",
                     br,
-                    { koira = "k" },
+                    { Car = "Was Stolen" },
                     "Weather"
                 ),
-                p "koira",
+                p "A Dog",
                 img { src = "logo.png" },
                 table(
                     tr (
@@ -49,14 +49,14 @@ do
             ),
             body (
                 h1 { class = 'title "is" bigger than you think', "selected" } "Hello",
-                h1 "perse",
+                h1 "Another Headline",
                 p (
                     "<Beautiful> & <Strange>",
                     br,
                     { koira = "k" },
                     "Weather"
                 ),
-                p "koira",
+                p "A Dog",
                 img { src = "logo.png" },
                 table(
                     tr (
