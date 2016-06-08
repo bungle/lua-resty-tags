@@ -53,7 +53,7 @@ do
                 p (
                     "<Beautiful> & <Strange>",
                     br,
-                    { koira = "k" },
+                    { Car = "Was Stolen" },
                     "Weather"
                 ),
                 p "A Dog",

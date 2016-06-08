@@ -12,25 +12,140 @@ local pairs = pairs
 local gsub = string.gsub
 local ngx = ngx
 local null = type(ngx) == "table" and ngx.null
-local void = {
-    area    = true,
-    base    = true,
-    br      = true,
-    col     = true,
-    command = true,
-    embed   = true,
-    hr      = true,
-    img     = true,
-    input   = true,
-    keygen  = true,
-    link    = true,
-    meta    = true,
-    param   = true,
-    source  = true,
-    track   = true,
-    wbr     = true
+local _G = _G
+local voids    = {
+    area       = true,
+    base       = true,
+    br         = true,
+    col        = true,
+    command    = true,
+    embed      = true,
+    hr         = true,
+    img        = true,
+    input      = true,
+    keygen     = true,
+    link       = true,
+    meta       = true,
+    param      = true,
+    source     = true,
+    track      = true,
+    wbr        = true
 }
-
+local elements = {
+    a          = true,
+    abbr       = true,
+    address    = true,
+    area       = true,
+    article    = true,
+    aside      = true,
+    audio      = true,
+    b          = true,
+    base       = true,
+    bdi        = true,
+    bdo        = true,
+    blockquote = true,
+    body       = true,
+    br         = true,
+    button     = true,
+    canvas     = true,
+    caption    = true,
+    cite       = true,
+    code       = true,
+    col        = true,
+    colgroup   = true,
+    command    = true,
+    data       = true,
+    datalist   = true,
+    dd         = true,
+    del        = true,
+    details    = true,
+    dfn        = true,
+    div        = true,
+    dl         = true,
+    dt         = true,
+    em         = true,
+    embed      = true,
+    fieldset   = true,
+    figcaption = true,
+    figure     = true,
+    footer     = true,
+    form       = true,
+    h1         = true,
+    h2         = true,
+    h3         = true,
+    h4         = true,
+    h5         = true,
+    h6         = true,
+    head       = true,
+    header     = true,
+    hgroup     = true,
+    hr         = true,
+    html       = true,
+    i          = true,
+    iframe     = true,
+    img        = true,
+    input      = true,
+    ins        = true,
+    kbd        = true,
+    keygen     = true,
+    label      = true,
+    legend     = true,
+    li         = true,
+    link       = true,
+    main       = true,
+    map        = true,
+    mark       = true,
+    menu       = true,
+    meta       = true,
+    meter      = true,
+    nav        = true,
+    noscript   = true,
+    object     = true,
+    ol         = true,
+    optgroup   = true,
+    option     = true,
+    output     = true,
+    p          = true,
+    param      = true,
+    pre        = true,
+    progress   = true,
+    q          = true,
+    rb         = true,
+    rp         = true,
+    rt         = true,
+    rtc        = true,
+    ruby       = true,
+    s          = true,
+    samp       = true,
+    script     = true,
+    section    = true,
+    select     = true,
+    small      = true,
+    source     = true,
+    span       = true,
+    strong     = true,
+    style      = true,
+    sub        = true,
+    summary    = true,
+    sup        = true,
+    table      = true,
+    tbody      = true,
+    td         = true,
+    template   = true,
+    textarea   = true,
+    tfoot      = true,
+    th         = true,
+    thead      = true,
+    time       = true,
+    title      = true,
+    tr         = true,
+    track      = true,
+    u          = true,
+    ul         = true,
+    var        = true,
+    video      = true,
+    wbr        = true,
+}
 local escape = {
     ["&"] = "&amp;",
     ["<"] = "&lt;",
@@ -39,28 +154,23 @@ local escape = {
     ["'"] = "&#39;",
     ["/"] = "&#47;"
 }
-
 local function output(s)
     if s == nil or s == null then return "" end
     return tostring(s)
 end
-
 local function html(s)
     if type(s) == "string" then
         return gsub(s, "[\">/<'&]", escape)
     end
     return output(s)
 end
-
 local function attr(s)
     if type(s) == "string" then
         return gsub(s, '["><&]', escape)
     end
     return output(s)
 end
-
 local tag = {}
-
 function tag.new(opts)
     if type(opts) == "table" then
         return setmetatable(opts, tag)
@@ -68,10 +178,9 @@ function tag.new(opts)
         return setmetatable({ name = opts, childs = {} }, tag)
     end
 end
-
 function tag:__tostring()
     if #self.childs == 0 then
-        if (void[self.name]) then
+        if (voids[self.name]) then
             return concat{ "<", self.name, self.attributes or "", ">" }
         else
             return concat{ "<", self.name, self.attributes or "", "></", self.name, ">" }
@@ -80,7 +189,6 @@ function tag:__tostring()
         return concat{ "<", self.name, self.attributes or "", ">", concat(self.childs), "</", self.name, ">" }
     end
 end
-
 function tag:__call(...)
     local argc = select("#", ...)
     local childs, attributes = {}, self.attributes
@@ -121,15 +229,18 @@ function tag:__call(...)
         attributes = attributes
     }
 end
-
 local mt = {}
-
 function mt:__index(k)
-    return tag.new(k)
+    -- TODO: should we have special handling for table and select?
+    if elements[k] then
+        return tag.new(k)
+    elseif _G[k] then
+        return _G[k]
+    else
+        return tag.new(k)
+    end
 end
-
 local context = setmetatable({}, mt)
-
 return function(...)
     local argc = select("#", ...)
     local r = {}
