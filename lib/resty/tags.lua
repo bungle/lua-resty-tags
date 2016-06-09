@@ -170,7 +170,14 @@ local function attr(s)
     end
     return output(s)
 end
-local function copyarray(s)
+local function none(s)
+    return s
+end
+local escapers = {
+    script = none,
+    style  = none
+}
+local function copy(s)
     local n = #s
     local d = {}
     for i=1, n do
@@ -218,16 +225,16 @@ function tag:__call(...)
                 end
                 a = concat(r)
             else
-                c[s+i] = self.name == "script" and v or html(v)
+                c[s+i] = (escapers[self.name] or html)(v)
             end
         else
-            c[s+i] = self.name == "script" and v or html(v)
+            c[s+i] = (escapers[self.name] or html)(v)
         end
     end
     if self.copy then
         return tag.new{
             name       = self.name,
-            childs     = copyarray(c),
+            childs     = copy(c),
             attributes = a
         }
     end
