@@ -170,34 +170,37 @@ local function attr(s)
     end
     return output(s)
 end
+local function copyarray(s)
+    local n = #s
+    local d = {}
+    for i=1, n do
+        d[i] = s[i]
+    end
+    return d
+end
 local tag = {}
 function tag.new(opts)
-    if type(opts) == "table" then
-        return setmetatable(opts, tag)
-    else
-        return setmetatable({ name = opts, childs = {} }, tag)
-    end
+    return setmetatable(opts, tag)
 end
 function tag:__tostring()
     if #self.childs == 0 then
         if (voids[self.name]) then
             return concat{ "<", self.name, self.attributes or "", ">" }
-        else
-            return concat{ "<", self.name, self.attributes or "", "></", self.name, ">" }
         end
-    else
-        return concat{ "<", self.name, self.attributes or "", ">", concat(self.childs), "</", self.name, ">" }
+        return concat{ "<", self.name, self.attributes or "", "></", self.name, ">" }
     end
+    return concat{ "<", self.name, self.attributes or "", ">", concat(self.childs), "</", self.name, ">" }
 end
 function tag:__call(...)
     local argc = select("#", ...)
-    local childs, attributes = {}, self.attributes
+    local childs, attributes = self.copy and {} or self.childs, self.attributes
+    local c = #childs
     for i=1, argc do
         local argv = select(i, ...)
         if type(argv) == "table" then
             if getmetatable(argv) == tag then
-                childs[i] = tostring(argv)
-            elseif argc == 1 and not attributes then
+                childs[c+i] = tostring(argv)
+            elseif c == 0 and argc == 1 and not attributes then
                 local a = {}
                 local i = 1
                 for k, v in pairs(argv) do
@@ -217,27 +220,37 @@ function tag:__call(...)
                 end
                 attributes = concat(a)
             else
-                childs[i] = html(argv)
+                childs[c+i] = html(argv)
             end
         else
-            childs[i] = html(argv)
+            childs[c+i] = html(argv)
         end
     end
-    return tag.new{
-        name = self.name,
-        childs = childs,
-        attributes = attributes
-    }
+    if self.copy then
+        return tag.new{
+            name       = self.name,
+            childs     = copyarray(childs),
+            attributes = attributes
+        }
+    end
+    self.attributes = attributes
+    return self
 end
 local mt = {}
 function mt:__index(k)
-    -- TODO: should we have special handling for table and select?
+    -- TODO: should we have special handling for table and select (the built-in Lua functions)?
     if elements[k] then
-        return tag.new(k)
+        return tag.new{
+            name   = k,
+            childs = {}
+        }
     elseif _G[k] then
         return _G[k]
     else
-        return tag.new(k)
+        return tag.new{
+            name   = k,
+            childs = {}
+        }
     end
 end
 local context = setmetatable({}, mt)
@@ -249,7 +262,11 @@ return function(...)
         if type(v) == "function" then
             r[i] = setfenv(v, context)
         else
-            r[i] = tag.new(v)
+            r[i] = tag.new{
+                name   = v,
+                childs = {},
+                copy   = true
+            }
         end
     end
     return unpack(r)
