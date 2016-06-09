@@ -204,7 +204,7 @@ local tags = require "resty.tags"
 local script = tags("script")
 print(script[[
     function hello() {
-        alert("Hello World");
+        alert("<strong>Hello World</strong>");
     }
     hello();
 ]])
@@ -215,7 +215,7 @@ print(script[[
 ```html
 <script>
     function hello() {
-        alert("Hello World");
+        alert("<strong>Hello World</strong>");
     }
     hello();
 </script>
