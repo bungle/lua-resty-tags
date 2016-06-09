@@ -197,6 +197,30 @@ print(table{
 </table>
 ```
 
+##### Some special treatment is done to <script> tag:
+
+```lua
+local tags = require "resty.tags"
+local script = tags("script")
+print(script[[
+    function hello() {
+        alert("Hello World");
+    }
+    hello();
+]])
+```
+
+##### As you can see, we don't HTML encode the output:
+
+```html
+<script>
+    function hello() {
+        alert(&quot;Hello World&quot;);
+    }
+    hello();
+</script>
+```
+
 ## License
 
 `lua-resty-tags` uses two clause BSD license.

@@ -218,7 +218,7 @@ function tag:__call(...)
                 end
                 a = concat(r)
             else
-                c[s+i] = html(v)
+                c[s+i] = self.name == "script" and v or html(v)
             end
         else
             c[s+i] = html(v)
