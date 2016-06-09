@@ -215,7 +215,7 @@ print(script[[
 ```html
 <script>
     function hello() {
-        alert(&quot;Hello World&quot;);
+        alert("Hello World");
     }
     hello();
 </script>

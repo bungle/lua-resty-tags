@@ -221,7 +221,7 @@ function tag:__call(...)
                 c[s+i] = self.name == "script" and v or html(v)
             end
         else
-            c[s+i] = html(v)
+            c[s+i] = self.name == "script" and v or html(v)
         end
     end
     if self.copy then
