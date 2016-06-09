@@ -183,57 +183,55 @@ function tag.new(opts)
     return setmetatable(opts, tag)
 end
 function tag:__tostring()
-    if #self.childs == 0 then
-        if (voids[self.name]) then
-            return concat{ "<", self.name, self.attributes or "", ">" }
-        end
-        return concat{ "<", self.name, self.attributes or "", "></", self.name, ">" }
+    local n, c, a = self.name, self.childs, self.attributes
+    if #c == 0 then
+        return voids[n] and concat{ "<", n, a or "", ">" } or concat{ "<", n, a or "", "></", n, ">" }
     end
-    return concat{ "<", self.name, self.attributes or "", ">", concat(self.childs), "</", self.name, ">" }
+    return concat{ "<", n, a or "", ">", concat(c), "</", n, ">" }
 end
 function tag:__call(...)
-    local argc = select("#", ...)
-    local childs, attributes = self.copy and {} or self.childs, self.attributes
-    local c = #childs
-    for i=1, argc do
-        local argv = select(i, ...)
-        if type(argv) == "table" then
-            if getmetatable(argv) == tag then
-                childs[c+i] = tostring(argv)
-            elseif c == 0 and argc == 1 and not attributes then
-                local a = {}
+    local n = select("#", ...)
+    local c, a = self.copy and {} or self.childs, self.attributes
+    local s = #c
+    for i=1, n do
+        local v = select(i, ...)
+        if type(v) == "table" then
+            if getmetatable(v) == tag then
+                c[s+i] = tostring(v)
+            elseif s == 0 and n == 1 and not a then
+                local r = {}
                 local i = 1
-                for k, v in pairs(argv) do
+                for k, v in pairs(v) do
                     if type(k) ~= "number" then
-                        a[i]=" "
-                        a[i+1] = k
-                        a[i+2] = '="'
-                        a[i+3] = attr(v)
-                        a[i+4] = '"'
+                        r[i]=" "
+                        r[i+1] = k
+                        r[i+2] = '="'
+                        r[i+3] = attr(v)
+                        r[i+4] = '"'
                         i=i+5
                     end
                 end
-                for _, v in ipairs(argv) do
-                    a[i]=" "
-                    a[i+1]=attr(v)
+                for _, v in ipairs(v) do
+                    r[i]=" "
+                    r[i+1]=attr(v)
                     i=i+2
                 end
-                attributes = concat(a)
+                a = concat(r)
             else
-                childs[c+i] = html(argv)
+                c[s+i] = html(v)
             end
         else
-            childs[c+i] = html(argv)
+            c[s+i] = html(v)
         end
     end
     if self.copy then
         return tag.new{
             name       = self.name,
-            childs     = copyarray(childs),
-            attributes = attributes
+            childs     = copyarray(c),
+            attributes = a
         }
     end
-    self.attributes = attributes
+    self.attributes = a
     return self
 end
 local mt = {}
