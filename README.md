@@ -152,7 +152,7 @@ print(html())
 </html>
 ```
 
-##### In this final example we create a table snippet:
+##### In this example we create a table snippet:
 
 ```lua
 local tags = require "resty.tags"
