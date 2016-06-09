@@ -144,7 +144,7 @@ local elements = {
     ul         = true,
     var        = true,
     video      = true,
-    wbr        = true,
+    wbr        = true
 }
 local escape = {
     ["&"] = "&amp;",
