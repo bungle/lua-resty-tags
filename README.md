@@ -197,7 +197,7 @@ print(table{
 </table>
 ```
 
-##### Some special treatment is done to `<script>` tag:
+##### Some special treatment is done to `<script>` and `<style>` tags:
 
 ```lua
 local tags = require "resty.tags"
