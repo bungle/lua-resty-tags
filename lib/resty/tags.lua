@@ -244,12 +244,7 @@ end
 local mt = {}
 function mt:__index(k)
     -- TODO: should we have special handling for table and select (the built-in Lua functions)?
-    if elements[k] then
-        return tag.new{
-            name   = k,
-            childs = {}
-        }
-    elseif _G[k] then
+    if not elements[k] and _G[k] then
         return _G[k]
     else
         return tag.new{
