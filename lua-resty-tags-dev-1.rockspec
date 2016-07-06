@@ -5,7 +5,7 @@ source = {
 }
 description = {
     summary = "A small DSL for building HTML documents",
-    detailed = "lua-tags-template is a small DSL for building HTML documents using simple Lua structures.",
+    detailed = "lua-resty-tags is a small DSL for building HTML documents using simple Lua structures.",
     homepage = "https://github.com/bungle/lua-resty-tags",
     maintainer = "Aapo Talvensaari <aapo.talvensaari@gmail.com>",
     license = "BSD"
