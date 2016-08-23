@@ -201,7 +201,7 @@ print(table{
 
 ```lua
 local tags = require "resty.tags"
-local script = tags("script")
+local script = tags "script"
 print(script[[
     function hello() {
         alert("<strong>Hello World</strong>");
