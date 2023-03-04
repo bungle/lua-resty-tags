@@ -204,8 +204,8 @@ function tag:__call(...)
         local v = select(i, ...)
         if type(v) == "table" then
             if getmetatable(v) == tag then
-                c[s+i] = tostring(v)
-            elseif s == 0 and n == 1 and not a then
+                c[#c+1] = tostring(v)
+            elseif not a then
                 local r = {}
                 local i = 1
                 for k, v in pairs(v) do
@@ -225,10 +225,10 @@ function tag:__call(...)
                 end
                 a = concat(r)
             else
-                c[s+i] = (escapers[self.name] or html)(v)
+                c[#c+1] = (escapers[self.name] or html)(v)
             end
         else
-            c[s+i] = (escapers[self.name] or html)(v)
+            c[#c+1] = (escapers[self.name] or html)(v)
         end
     end
     if self.copy then
